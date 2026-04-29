@@ -1,24 +1,51 @@
 public class HashTable<E extends KeyedElementInterface<K>, K> implements HashTableInterface<E, K> {
-    private LinkedList<E, K> bucketList;
-    private int count;
+    private static int NUMBER_OF_BUCKETS = 26;
+    private LinkedList<E, K>[] buckets;
+    private int size;
 
     public HashTable() {
-        this.bucketList = null;
-        this.count = 0;
+        this.buckets = new LinkedList[NUMBER_OF_BUCKETS];
+        for (int i = 0; i < NUMBER_OF_BUCKETS; i++) {
+            this.buckets[i] = new LinkedList<>();
+        }
+        this.size = 0;
     }
 
-    private int hashFunction(K key) {
-        return 0;
+    public HashTable(Object[] incomingBuckets) throws InstantiationException {
+        if (incomingBuckets.length != NUMBER_OF_BUCKETS) {
+            throw new InstantiationException();
+        }
+
+        for (int i = 0; i < incomingBuckets.length; i++) {
+            if (!(incomingBuckets[i] instanceof LinkedList<?, ?>)) {
+                throw new InstantiationException();
+            }
+        }
+
+        for (int i = 0; i < NUMBER_OF_BUCKETS; i++) {
+            LinkedList<E, K> list = (LinkedList<E, K>) incomingBuckets[i];
+            this.buckets[i] = (LinkedList<E, K>) list.copy();
+            this.size += list.size();
+        }
+    }
+
+    private int hashFunction(int key) {
+        int hashCode = key % buckets.length;
+        return hashCode;
+    }
+
+    private int probe(int hashCode, int i) {
+        return (hashCode + i + (i * i)) % buckets.length;
     }
 
     @Override
     public int size() {
-        return count;
+        return this.size;
     }
 
     @Override
     public boolean isEmpty() {
-        return (this.count == 0);
+        return (this.size == 0);
     }
 
     @Override
