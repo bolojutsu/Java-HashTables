@@ -16,16 +16,17 @@ public class HashTable<E extends KeyedElementInterface<K>, K> implements HashTab
             throw new InstantiationException();
         }
 
+        this.buckets = new LinkedList[NUMBER_OF_BUCKETS];
+        this.size = 0;
+
         for (int i = 0; i < incomingBuckets.length; i++) {
             if (!(incomingBuckets[i] instanceof LinkedList<?, ?>)) {
                 throw new InstantiationException();
             }
-        }
 
-        for (int i = 0; i < NUMBER_OF_BUCKETS; i++) {
             LinkedList<E, K> list = (LinkedList<E, K>) incomingBuckets[i];
             this.buckets[i] = (LinkedList<E, K>) list.copy();
-            this.size += list.size();
+            this.size += this.buckets[i].size();
         }
     }
 
